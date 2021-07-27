@@ -197,6 +197,13 @@ func (s *dockerImageSource) fetchManifest(ctx context.Context, tagOrDigest strin
 		return nil, "", err
 	}
 	logrus.Debugf("Content-Type from manifest GET is %q", res.Header.Get("Content-Type"))
+	
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, "", errors.Wrap(err, "failed to read server response")
+	}
+	fmt.Println("RESPONSE BODY", string(b))
+
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
 		return nil, "", errors.Wrapf(registryHTTPResponseToError(res), "reading manifest %s in %s", tagOrDigest, s.physicalRef.ref.Name())
